@@ -1,28 +1,34 @@
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
-const blog = () => {
-  return (
-    <div>
-    <h2 className={styles.h2}>Latest Blogs</h2>
-    <div>
-      <Link href={'/blogpost/learn'}>
-      <h3 className={styles.h3}>How to learn JavaScript in 2022?</h3></Link>
-      <p>JavaScript is the language used to design logic for the web. Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic error voluptatum impedit!</p>
-      <button className={styles.btn}>Read More</button>
-    </div>
-    <div>
-      <h3 className={styles.h3}>How to learn JavaScript in 2022?</h3>
-      <p className={styles.p}>JavaScript is the language used to design logic for the web</p>
-      <button className={styles.btn}>Read More</button>
-    </div>
-    <div>
-      <h3 className={styles.h3}>How to learn JavaScript in 2022?</h3>
-      <p>JavaScript is the language used to design logic for the web</p>
-      <button className={styles.btn}>Read More</button>
-    </div>
-  </div>
-  )
+const Blog = (props) => {
+const [blogs, setBlogs] = useState(props.allBlogs)
+
+
+
+  return <div className={styles.container}>
+   <main className={styles.main}>
+     {blogs.map((blogitem)=>{
+       return <div key={blogitem.slug}>
+        
+        <Link href={`/blogpost/${blogitem.slug}`}>
+        <h4 className={styles.blogItem}>{blogitem.title}</h4></Link>
+        <p>{blogitem.metadesc.substr(0, 400)}</p>
+        <p>{blogitem.slug}</p>
+       </div>
+     })}
+   </main>
+  </div> 
+
 }
 
-export default blog
+export async function getServerSideProps(context){
+  let data = await fetch('http://localhost:3000/api/blogs')
+  let allBlogs = await data.json();
+
+  return {
+    props: {allBlogs}
+  }
+}
+
+export default Blog
